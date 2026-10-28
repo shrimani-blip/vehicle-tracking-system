@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI + IoT Vehicle Tracking System</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #172033;
+}
+
+header {
+  background: #10213b;
+  color: white;
+  padding: 25px;
+  text-align: center;
+}
+
+header h1 { margin: 0 0 10px; }
+header p { color: #cbd5e1; margin: 0; }
+
+main {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 18px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.card, .panel {
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px #0000000d;
+}
+
+.card p { color: #64748b; margin: 0; }
+.card h2 { font-size: 30px; margin-bottom: 0; }
+
+.panel { margin-top: 24px; overflow-x: auto; }
+
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover { background: #1d4ed8; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  min-width: 600px;
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th { color: #64748b; }
+
+.status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.normal { background: #dcfce7; color: #166534; }
+.alert { background: #fee2e2; color: #991b1b; }
+
+.location {
+  margin-top: 20px;
+  padding: 18px;
+  background: #e0f2fe;
+  border-radius: 10px;
+}
+
+footer {
+  text-align: center;
+  padding: 22px;
+  color: #64748b;
+}
+
+.small {
+  font-size: 13px;
+  color: #64748b;
+}
+
+@media (max-width: 600px) {
+  header h1 { font-size: 23px; }
+  .card, .panel { padding: 16px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🚘 AI + IoT Vehicle Tracking System</h1>
+  <p>Vehicle Location Monitoring and Safety Alerts</p>
+</header>
+
+<main>
+
+  <section class="stats">
+    <div class="card">
+      <p>Total Vehicles</p>
+      <h2 id="total">3</h2>
+    </div>
+
+    <div class="card">
+      <p>Active Vehicles</p>
+      <h2 id="active">3</h2>
+    </div>
+
+    <div class="card">
+      <p>Overspeed Alerts</p>
+      <h2 id="alerts">0</h2>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Vehicle Tracking Dashboard</h2>
+    <p>View vehicle coordinates, speed and safety status.</p>
+
+    <button onclick="updateVehicles()">Refresh Tracking Data</button>
+
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Vehicle ID</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Speed</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="vehicleTable"></tbody>
+      </table>
+    </div>
+
+    <div class="location">
+      <h3>📍 Location Overview</h3>
+      <p id="locationText">
+        Sample vehicle coordinates around Chennai.
+      </p>
+      <p class="small">
+        This demo uses simulated GPS data, not real-time vehicle locations.
+      </p>
+    </div>
+
+    <p class="small">
+      Overspeed threshold: 80 km/h. Vehicle data is generated for demonstration.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  AI + IoT Vehicle Tracking System | College Project Demo
+</footer>
+
+<script>
+const vehicles = [
+  { id: "TN01AB1234", lat: 13.0648, lon: 80.2461, speed: 42 },
+  { id: "TN02CD5678", lat: 13.0827, lon: 80.2707, speed: 65 },
+  { id: "TN03EF9012", lat: 13.0475, lon: 80.2090, speed: 35 }
+];
+
+function updateVehicles() {
+  let alerts = 0;
+  const table = document.getElementById("vehicleTable");
+  table.innerHTML = "";
+
+  vehicles.forEach(vehicle => {
+    vehicle.lat += (Math.random() - 0.5) * 0.002;
+    vehicle.lon += (Math.random() - 0.5) * 0.002;
+    vehicle.speed = Math.floor(25 + Math.random() * 76);
+
+    const isAlert = vehicle.speed > 80;
+
+    if (isAlert) alerts++;
+
+    const row = document.createElement("tr");
+
+    [
+      vehicle.id,
+      vehicle.lat.toFixed(4),
+      vehicle.lon.toFixed(4),
+      vehicle.speed + " km/h"
+    ].forEach(value => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.appendChild(cell);
+    });
+
+    const statusCell = document.createElement("td");
+    const badge = document.createElement("span");
+
+    badge.className = "status " + (isAlert ? "alert" : "normal");
+    badge.textContent = isAlert ? "OVERSPEEDING" : "NORMAL";
+
+    statusCell.appendChild(badge);
+    row.appendChild(statusCell);
+    table.appendChild(row);
+  });
+
+  document.getElementById("total").textContent = vehicles.length;
+  document.getElementById("active").textContent = vehicles.length;
+  document.getElementById("alerts").textContent = alerts;
+
+  document.getElementById("locationText").textContent =
+    "Last updated: " + new Date().toLocaleTimeString() +
+    ". Sample coordinates around Chennai.";
+}
+
+updateVehicles();
+</script>
+
+</body>
+</html>
